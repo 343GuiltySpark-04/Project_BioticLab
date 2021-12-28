@@ -9,6 +9,12 @@ class block{
 
     }
 
+    calculateHash(){
+
+
+        
+    }
+
     
 
 }
