@@ -22,7 +22,7 @@ class Block {
 
     mineBlock(difficulty) {
 
-        
+
 
         console.log("Mining Block: " + currentBlockNumber + "....");
 
@@ -40,23 +40,23 @@ class Block {
         console.log("Block mined: " + this.hash);
         console.log("Number of blocks mined: " + blocksMined);
         //console.log("Is blockchain valid?: " + Blockchain.isChainValid());
-       
-        if(inSync == false){
+
+        if (inSync == false) {
 
             currentBlockNumber = blocksMined
             currentBlockNumber++;
 
         }
-        
-       
+
+
 
     }
 
-    blockNumberCheck(){
+    blockNumberCheck() {
 
         let x = blocksMined;
 
-        if(currentBlockNumber !== x + 1){
+        if (currentBlockNumber !== x + 1) {
 
             return false;
 
