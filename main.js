@@ -1,4 +1,6 @@
 const SHA256 = require("crypto-js/sha256");
+var blocksMined = 0;
+var currentBlockNumber = 2;
 
 class Block {
 
@@ -8,15 +10,62 @@ class Block {
         this.data = data;
         this.previousHash = previousHash;
         this.hash = this.calculateHash();
+        this.nonce = 0;
 
     }
 
     calculateHash() {
 
-        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data)).toString();
+        return SHA256(this.index + this.previousHash + this.timestamp + JSON.stringify(this.data) + this.nonce).toString();
 
     }
 
+    mineBlock(difficulty) {
+
+        
+
+        console.log("Mining Block: " + currentBlockNumber + "....");
+
+        while (this.hash.substring(0, difficulty) !== Array(difficulty + 1).join("0")) {
+
+            this.nonce++;
+            this.hash = this.calculateHash();
+
+        }
+
+
+        blocksMined++;
+        currentBlockNumber++;
+        let inSync = this.blockNumberCheck();
+        console.log("Block mined: " + this.hash);
+        console.log("Number of blocks mined: " + blocksMined);
+        //console.log("Is blockchain valid?: " + Blockchain.isChainValid());
+       
+        if(inSync == false){
+
+            currentBlockNumber = blocksMined
+            currentBlockNumber++;
+
+        }
+        
+       
+
+    }
+
+    blockNumberCheck(){
+
+        let x = blocksMined;
+
+        if(currentBlockNumber !== x + 1){
+
+            return false;
+
+        }
+
+        return true;
+
+
+    }
 
 
 
@@ -28,7 +77,7 @@ class Blockchain {
     constructor() {
 
         this.chain = [this.createGenesisBlock];
-
+        this.difficulty = 4;
 
 
 
@@ -48,8 +97,9 @@ class Blockchain {
     addBlock(newBlock) {
 
         newBlock.previousHash = this.getLatestBlock().hash;
-        newBlock.hash = newBlock.calculateHash();
+        newBlock.mineBlock(this.difficulty);
         this.chain.push(newBlock);
+        console.log("Is blockchain valid?: " + this.isChainValid());
     }
 
     isChainValid() {
@@ -82,6 +132,6 @@ let Project_Bioticlab = new Blockchain();
 Project_Bioticlab.addBlock(new Block(1, "12/29/2021", { amount: 4 }));
 Project_Bioticlab.addBlock(new Block(2, "12/30/2021", { amount: 5 }));
 
-console.log("Is blockchain vaild?: " + Project_Bioticlab.isChainValid());
+//console.log("Is blockchain vaild?: " + Project_Bioticlab.isChainValid());
 
 //console.log(JSON.stringify(Project_Bioticlab, null, 4));
