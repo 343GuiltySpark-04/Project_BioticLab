@@ -52,10 +52,36 @@ class Blockchain {
         this.chain.push(newBlock);
     }
 
+    isChainValid() {
+        for (let i = 1; i < this.chain.length; i++) {
+
+            const currentBlock = this.chain[i];
+            const previousBlock = this.chain[i - 1];
+
+            if (currentBlock.hash !== currentBlock.calculateHash()) {
+
+                return false;
+
+            }
+
+            if (currentBlock.previousHash !== previousBlock.hash) {
+
+                return false;
+
+            }
+
+        }
+
+        return true;
+
+    }
+
 }
 
 let Project_Bioticlab = new Blockchain();
 Project_Bioticlab.addBlock(new Block(1, "12/29/2021", { amount: 4 }));
 Project_Bioticlab.addBlock(new Block(2, "12/30/2021", { amount: 5 }));
 
-console.log(JSON.stringify(Project_Bioticlab, null, 4));
+console.log("Is blockchain vaild?: " + Project_Bioticlab.isChainValid());
+
+//console.log(JSON.stringify(Project_Bioticlab, null, 4));
