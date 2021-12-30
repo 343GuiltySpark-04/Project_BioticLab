@@ -100,7 +100,7 @@ class Block {
 
 class Blockchain {
   constructor() {
-    this.chain = [this.createGenesisBlock];
+    this.chain = [this.createGenesisBlock()];
     this.difficulty = 2;
     this.pendingTransactions = [];
     this.miningReward = 100;
@@ -170,7 +170,7 @@ class Blockchain {
   }
 
   getBalanceOfAddress(address) {
-    let balance = 0;
+    let balance = 0;/*  */
 
     for (const block of this.chain) {
       for (const trans of block.transactions) {
