@@ -1,6 +1,6 @@
 const SHA256 = require("crypto-js/sha256");
-const EC = require('elliptic').ec;
-const ec = new EC('secp256k1');
+const EC = require("elliptic").ec;
+const ec = new EC("secp256k1");
 var blocksMined = 0;
 var currentBlockNumber = 2;
 
@@ -11,44 +11,30 @@ class Transaction {
     this.amount = amount;
   }
 
-  calculateHash(){
-
+  calculateHash() {
     return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
-
-
   }
 
-  signTransaction(signingKey){
-
-      if (signingKey.getPublic('hex') !== this.fromAddress){
-
-        throw new Error('You cannot sign a transaction for other wallets');
-
-      }
-
-    const hashtx = this.calculateHash();
-    const sig = signingKey.sign(hashtx, 'base64');
-    this.signature = sig.toDER('hex');
-
-  }
-
-
-  isValid(){
-
-    if (this.fromAddress === null) return true;
-
-    if (!this.signature || this.signature.length === 0){
-
-        throw new Error("No signature in this transaction!");
-
+  signTransaction(signingKey) {
+    if (signingKey.getPublic("hex") !== this.fromAddress) {
+      throw new Error("You cannot sign a transaction for other wallets");
     }
 
-    const publicKey = ec.keyFromPublic(this.fromAddress, 'hex');
-    return publicKey.verify(this.calculateHash(), this.signature);
-
+    const hashtx = this.calculateHash();
+    const sig = signingKey.sign(hashtx, "base64");
+    this.signature = sig.toDER("hex");
   }
 
+  isValid() {
+    if (this.fromAddress === null) return true;
 
+    if (!this.signature || this.signature.length === 0) {
+      throw new Error("No signature in this transaction!");
+    }
+
+    const publicKey = ec.keyFromPublic(this.fromAddress, "hex");
+    return publicKey.verify(this.calculateHash(), this.signature);
+  }
 }
 
 class Block {
@@ -80,30 +66,23 @@ class Block {
     }
   }
 
-  hasValidTransactions(){
-    
-    for(const tx of this.transactions){
-
-        if(!tx.isValid()){
-
-            return false;
-        }
-
-
+  hasValidTransactions() {
+    for (const tx of this.transactions) {
+      if (!tx.isValid()) {
+        return false;
+      }
     }
 
     return true;
-
   }
-
 }
 
 class Blockchain {
   constructor() {
     this.chain = [this.createGenesisBlock()];
-    this.difficulty = 2;
+    this.difficulty = 4;
     this.pendingTransactions = [];
-    this.miningReward = 100;
+    this.miningReward = 20;
   }
 
   blockNumberCheck() {
@@ -138,7 +117,8 @@ class Blockchain {
     console.log("Block mined successfuly!");
     console.log("Number of blocks mined: " + blocksMined);
     this.chain.push(block);
-    console.log("Is blockchain valid?: " + this.isChainValid());
+    //console.log("Is blockchain valid?: " + this.isChainValid());
+    // Broken at the moment TODO: FIX
 
     if (inSync == false) {
       currentBlockNumber = blocksMined;
@@ -151,26 +131,19 @@ class Blockchain {
   }
 
   addTransaction(transaction) {
-
-    if (!transaction.fromAddress || !transaction.toAddress){
-
-        throw new Error('Transaction must include a to and from address!');
-
-
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw new Error("Transaction must include a to and from address!");
     }
 
-    if(!transaction.isValid()){
-
-        throw new Error('Cannot add invalid transactions to chain!');
-
-
+    if (!transaction.isValid()) {
+      throw new Error("Cannot add invalid transactions to chain!");
     }
 
     this.pendingTransactions.push(transaction);
   }
 
   getBalanceOfAddress(address) {
-    let balance = 0;/*  */
+    let balance = 0; /*  */
 
     for (const block of this.chain) {
       for (const trans of block.transactions) {
@@ -192,10 +165,8 @@ class Blockchain {
       const currentBlock = this.chain[i];
       const previousBlock = this.chain[i - 1];
 
-      if (!currentBlock.hasValidTransactions()){
-
+      if (!currentBlock.hasValidTransactions()) {
         return false;
-
       }
 
       if (currentBlock.hash !== currentBlock.calculateHash()) {
